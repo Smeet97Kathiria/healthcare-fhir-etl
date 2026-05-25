@@ -1,5 +1,7 @@
 # FHIROps Console
 
+[Live site](https://fhirops-console.onrender.com)
+
 FHIROps Console is a local healthcare interoperability project that extracts FHIR resources, parses HL7 v2 messages, validates and normalizes clinical payloads, loads curated tables into SQLite, and serves dashboard-ready analytics through a lightweight API.
 
 It provides a focused implementation of healthcare interoperability patterns through a local ETL pipeline, curated healthcare tables, HL7 v2 parsing, compliance-aware audit logging, and an interactive dashboard.
