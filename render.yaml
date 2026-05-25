@@ -8,6 +8,8 @@ services:
     envVars:
       - key: HOST
         value: 0.0.0.0
+      - key: PYTHON_VERSION
+        value: 3.11.9
       - key: FHIR_BASE_URL
         value: https://hapi.fhir.org/baseR4
       - key: PATIENT_LIMIT
