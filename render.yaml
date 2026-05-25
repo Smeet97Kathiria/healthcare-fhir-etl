@@ -24,3 +24,11 @@ services:
         value: false
       - key: APP_ACTOR
         value: local-operator
+      - key: FHIR_AUTH_MODE
+        value: none
+      - key: EPIC_FHIR_BASE_URL
+        value: https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4
+      - key: EPIC_REDIRECT_URI
+        value: https://fhirops-console.onrender.com/oauth/callback
+      - key: EPIC_SCOPES
+        value: launch/patient patient/Patient.read patient/Observation.read patient/Encounter.read patient/Condition.read offline_access

@@ -9,6 +9,7 @@ It provides a focused implementation of healthcare interoperability patterns thr
 ## Capabilities
 
 - FHIR REST API integration
+- Epic on FHIR sandbox readiness
 - HL7 v2 ADT/ORU message parsing
 - Patient and Observation resource extraction
 - JSON normalization into relational tables
@@ -88,6 +89,7 @@ healthcare-fhir-etl/
 │   ├── synthea/
 │   └── processed/
 ├── docs/
+│   ├── epic_on_fhir_readiness.md
 │   └── technical_overview.md
 ├── run_synthetic_pipeline.py
 ├── run_hl7_pipeline.py
@@ -194,6 +196,31 @@ Dashboard API endpoints:
 | POST `/api/run-pipeline` | Runs the FHIR extraction, transformation, and SQLite load |
 | POST `/api/load-synthetic` | Generates and loads local synthetic FHIR bundles |
 | POST `/api/load-hl7` | Generates and loads local synthetic HL7 v2 messages |
+
+## Epic on FHIR Readiness
+
+The project includes Epic on FHIR sandbox configuration placeholders without claiming production Epic access. The current live extractor defaults to the public HAPI FHIR R4 server, while the environment model includes an Epic sandbox path for SMART on FHIR client registration.
+
+Configuration placeholders:
+
+```text
+FHIR_AUTH_MODE=none
+EPIC_FHIR_BASE_URL=https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4
+EPIC_CLIENT_ID=
+EPIC_REDIRECT_URI=http://localhost:8000/oauth/callback
+EPIC_SCOPES=launch/patient patient/Patient.read patient/Observation.read patient/Encounter.read patient/Condition.read offline_access
+```
+
+The documented implementation path is:
+
+1. Register an app in Epic on FHIR.
+2. Configure redirect URI and client ID.
+3. Request SMART scopes for Patient, Observation, Encounter, and Condition reads.
+4. Add OAuth authorization-code handling.
+5. Attach the access token to FHIR API requests.
+6. Reuse the existing normalization and SQLite load steps.
+
+See [docs/epic_on_fhir_readiness.md](docs/epic_on_fhir_readiness.md) for the full integration path.
 
 ## Load Synthetic FHIR Data
 

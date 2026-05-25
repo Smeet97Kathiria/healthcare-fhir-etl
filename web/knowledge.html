@@ -73,6 +73,12 @@
           </article>
 
           <article class="brief-card">
+            <h3>Epic on FHIR sandbox path</h3>
+            <p>The project includes Epic on FHIR configuration placeholders for sandbox base URL, client ID, redirect URI, and SMART scopes. The active deployment keeps authentication disabled, but the code exposes the expected configuration contract through the local API.</p>
+            <p>The documented next step is an OAuth authorization-code flow that obtains an access token, calls Epic FHIR resources such as Patient, Observation, Encounter, and Condition, and reuses the existing normalization and quality-checking logic.</p>
+          </article>
+
+          <article class="brief-card">
             <h3>Privacy, security, and compliance thinking</h3>
             <p>HIPAA compliance depends on organizational controls, policies, contracts, infrastructure, risk analysis, monitoring, and incident response. This project focuses on application-level safeguards that support a compliance-aware operating model.</p>
             <p>The application defaults to synthetic data, blocks PHI mode unless explicitly enabled, logs patient detail access, keeps ETL audit records, and uses curated minimum-necessary views instead of exposing raw clinical bundles in the UI.</p>
@@ -110,7 +116,7 @@
         <div class="brief-grid">
           <article class="brief-card">
             <h3>Ingestion paths</h3>
-            <p>The live path calls the public HAPI FHIR R4 endpoint and extracts Patient and Observation resources. This validates API-based FHIR ingestion against an external FHIR server.</p>
+            <p>The live path calls the public HAPI FHIR R4 endpoint and extracts Patient and Observation resources. This validates API-based FHIR ingestion against an external FHIR server while preserving a clear path to Epic on FHIR sandbox authentication.</p>
             <p>The synthetic FHIR path generates Synthea-style bundles locally, then loads Patient, Encounter, Condition, and Observation resources. The HL7 path generates ADT and ORU messages, parses segments, and loads message/result tables. Together, the paths cover modern FHIR REST integration and legacy HL7 v2 interface processing.</p>
           </article>
 

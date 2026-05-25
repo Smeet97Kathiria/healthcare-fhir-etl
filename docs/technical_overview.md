@@ -8,6 +8,10 @@ FHIROps Console is a compact healthcare interoperability platform for local vali
 
 FHIR represents healthcare data as resources such as Patient, Observation, Encounter, Medication, and Condition. It commonly uses REST APIs and JSON, which aligns well with API-based ingestion patterns, schema validation, and downstream analytics modeling.
 
+## Epic on FHIR Readiness
+
+The project includes Epic on FHIR sandbox configuration placeholders for `EPIC_FHIR_BASE_URL`, `EPIC_CLIENT_ID`, `EPIC_REDIRECT_URI`, and SMART scopes. The current live pipeline uses a public FHIR endpoint, but the extraction path is designed so an OAuth-backed Epic sandbox client can be added while reusing the same Patient, Encounter, Condition, and Observation normalization logic.
+
 ## Pipeline Flow
 
 1. Calls a FHIR REST endpoint.

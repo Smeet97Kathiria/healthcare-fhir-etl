@@ -14,6 +14,17 @@ class Settings:
     data_classification: str = os.getenv("DATA_CLASSIFICATION", "synthetic")
     allow_phi: bool = os.getenv("ALLOW_PHI", "false").lower() == "true"
     app_actor: str = os.getenv("APP_ACTOR", "local-operator")
+    fhir_auth_mode: str = os.getenv("FHIR_AUTH_MODE", "none")
+    epic_fhir_base_url: str = os.getenv(
+        "EPIC_FHIR_BASE_URL",
+        "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
+    )
+    epic_client_id: str = os.getenv("EPIC_CLIENT_ID", "")
+    epic_redirect_uri: str = os.getenv("EPIC_REDIRECT_URI", "http://localhost:8000/oauth/callback")
+    epic_scopes: str = os.getenv(
+        "EPIC_SCOPES",
+        "launch/patient patient/Patient.read patient/Observation.read patient/Encounter.read patient/Condition.read offline_access",
+    )
     raw_dir: str = "data/raw"
     processed_dir: str = "data/processed"
 

@@ -26,6 +26,17 @@ class DashboardSettings:
     data_classification: str = os.getenv("DATA_CLASSIFICATION", "synthetic")
     allow_phi: bool = os.getenv("ALLOW_PHI", "false").lower() == "true"
     app_actor: str = os.getenv("APP_ACTOR", "local-operator")
+    fhir_auth_mode: str = os.getenv("FHIR_AUTH_MODE", "none")
+    epic_fhir_base_url: str = os.getenv(
+        "EPIC_FHIR_BASE_URL",
+        "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
+    )
+    epic_client_id: str = os.getenv("EPIC_CLIENT_ID", "")
+    epic_redirect_uri: str = os.getenv("EPIC_REDIRECT_URI", "http://localhost:8000/oauth/callback")
+    epic_scopes: str = os.getenv(
+        "EPIC_SCOPES",
+        "launch/patient patient/Patient.read patient/Observation.read patient/Encounter.read patient/Condition.read offline_access",
+    )
 
 
 settings = DashboardSettings()
@@ -724,6 +735,14 @@ class HealthcareDashboardHandler(BaseHTTPRequestHandler):
                 "observation_limit": settings.observation_limit,
                 "sqlite_db_path": settings.sqlite_db_path,
                 "data_classification": settings.data_classification,
+                "fhir_auth_mode": settings.fhir_auth_mode,
+                "epic_sandbox": {
+                    "base_url": settings.epic_fhir_base_url,
+                    "client_configured": bool(settings.epic_client_id),
+                    "redirect_uri": settings.epic_redirect_uri,
+                    "scopes": settings.epic_scopes.split(),
+                    "status": "ready_for_client_registration" if not settings.epic_client_id else "client_configured",
+                },
             },
             "/api/summary": _summary,
             "/api/analytics": _analytics,
