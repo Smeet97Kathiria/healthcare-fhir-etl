@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+healthcare_fhir.db
+data/raw/*.json
+data/processed/*.csv
+data/hl7/messages/
+data/synthea/generated/

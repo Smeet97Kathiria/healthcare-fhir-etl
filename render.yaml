@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: fhirops-console
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/generate_synthetic_fhir.py && python run_synthetic_pipeline.py && python run_hl7_pipeline.py && python web_app.py
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: FHIR_BASE_URL
+        value: https://hapi.fhir.org/baseR4
+      - key: PATIENT_LIMIT
+        value: 25
+      - key: OBSERVATION_LIMIT
+        value: 100
+      - key: SQLITE_DB_PATH
+        value: healthcare_fhir.db
+      - key: DATA_CLASSIFICATION
+        value: synthetic
+      - key: ALLOW_PHI
+        value: false
+      - key: APP_ACTOR
+        value: local-operator

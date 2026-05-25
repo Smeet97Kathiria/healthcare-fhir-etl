@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FHIROps Knowledge Brief</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="app-header brief-header">
+      <div class="header-copy">
+        <p class="eyebrow">Healthcare interoperability brief</p>
+        <h1>FHIR, HL7, and FHIROps Architecture</h1>
+        <p class="subhead">A technical brief covering interoperability standards, ingestion patterns, data modeling, quality controls, and operational dashboard design.</p>
+      </div>
+      <div class="header-panel">
+        <div class="system-health">
+          <span class="pulse-dot"></span>
+          <div>
+            <span class="label">Brief status</span>
+            <strong>Ready</strong>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a class="nav-link primary-link" href="/">Open Dashboard</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="brief-main">
+      <section class="brief-section">
+        <div class="brief-title">
+          <p class="eyebrow">Section 1</p>
+          <h2>Healthcare Interoperability Foundations</h2>
+          <p>Healthcare interoperability centers on exchanging clinical information safely across systems with different data models, message formats, workflows, and operational constraints. Reliable integration depends on understanding how standards behave in production, where data quality issues appear, and how pipelines preserve trust from source payload to analytics view.</p>
+        </div>
+
+        <div class="brief-grid">
+          <article class="brief-card">
+            <h3>HL7 v2 Messaging</h3>
+            <p>HL7 v2 is a widely deployed hospital messaging standard. It is event-driven and usually pipe-delimited. Patient registration, admission, discharge, lab result, order, and scheduling events are commonly exchanged as HL7 messages between clinical systems.</p>
+            <p>This project now generates and parses synthetic ADT^A01 and ORU^R01 messages. It reads MSH for routing metadata, PID for patient identity, PV1 for visit context, OBR for order context, and OBX for lab or vital result values.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>FHIR Resource APIs</h3>
+            <p>FHIR is a modern healthcare interoperability standard built around resource-oriented APIs. Patient, Encounter, Condition, Observation, MedicationRequest, AllergyIntolerance, Procedure, and DiagnosticReport are examples of core resources.</p>
+            <p>FHIR commonly uses REST and JSON, which makes it easier for data engineers to treat healthcare integration like API ingestion: request resources, validate payloads, normalize nested fields, and load curated tables.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>HL7 v2 vs FHIR</h3>
+            <p>HL7 v2 is commonly implemented as event/message processing. FHIR is commonly implemented as resource-oriented API integration. HL7 v2 remains heavily used inside hospitals because it powers long-running operational interfaces. FHIR is common for modern app integration, patient access, interoperability APIs, and analytics-friendly exchange.</p>
+            <p>A real environment often has both. An interface engine may receive HL7 v2 messages from an EHR, transform them, and expose a FHIR-style API or downstream analytics feed.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Healthcare ETL Requirements</h3>
+            <p>Healthcare data often requires normalization even when the source API is available. Patient references may be missing, codes may be absent or inconsistent, timestamps may use different formats, and related resources may arrive in separate calls. A production-quality pipeline needs raw traceability, validation, curated models, audit logs, and quality checks.</p>
+            <p>For analytics, raw FHIR is usually too nested. Teams often flatten it into tables such as patients, encounters, conditions, observations, medications, and procedures.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Codes and terminology</h3>
+            <p>FHIR resources often carry clinical codes. LOINC is common for lab and vital observations, SNOMED CT is common for clinical conditions and findings, RxNorm is common for medications, and ICD-10-CM is common for diagnosis and billing contexts.</p>
+            <p>Terminology preservation is important because the same display text can vary across systems. Analytics views should retain code, display, system, units, and timestamps wherever possible.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>SMART on FHIR and OAuth</h3>
+            <p>Many EHR FHIR APIs use OAuth through SMART on FHIR. The core idea is that an app gets authorized with a client ID, scopes, redirect URI, and an access token. The token determines which patient, user, and resources the app can access.</p>
+            <p>The current implementation uses public and synthetic data sources. The extraction layer is structured so OAuth-backed FHIR access can be added without changing the curated data model.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Privacy, security, and compliance thinking</h3>
+            <p>HIPAA compliance depends on organizational controls, policies, contracts, infrastructure, risk analysis, monitoring, and incident response. This project focuses on application-level safeguards that support a compliance-aware operating model.</p>
+            <p>The application defaults to synthetic data, blocks PHI mode unless explicitly enabled, logs patient detail access, keeps ETL audit records, and uses curated minimum-necessary views instead of exposing raw clinical bundles in the UI.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Operational Analytics Layer</h3>
+            <p>The dashboard is designed around questions that integration and clinical data teams commonly need to answer: which patients have risk signals, which resources are incomplete, which observation codes are flowing, and whether the latest ingestion run loaded expected records.</p>
+            <p>This keeps the project focused on data readiness, traceability, and clinical operations instead of static reporting.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="brief-section">
+        <div class="brief-title">
+          <p class="eyebrow">Section 2</p>
+          <h2>Project Technical Architecture</h2>
+          <p>FHIROps Console is structured as a compact interoperability platform with separate ingestion paths, transformation logic, a relational store, analytics endpoints, compliance event logging, and an interactive dashboard.</p>
+        </div>
+
+        <div class="architecture-flow">
+          <span>Live FHIR API</span>
+          <i></i>
+          <span>Raw JSON</span>
+          <i></i>
+          <span>Validation</span>
+          <i></i>
+          <span>Curated SQLite</span>
+          <i></i>
+          <span>Dashboard API</span>
+          <i></i>
+          <span>FHIROps UI</span>
+        </div>
+
+        <div class="brief-grid">
+          <article class="brief-card">
+            <h3>Ingestion paths</h3>
+            <p>The live path calls the public HAPI FHIR R4 endpoint and extracts Patient and Observation resources. This validates API-based FHIR ingestion against an external FHIR server.</p>
+            <p>The synthetic FHIR path generates Synthea-style bundles locally, then loads Patient, Encounter, Condition, and Observation resources. The HL7 path generates ADT and ORU messages, parses segments, and loads message/result tables. Together, the paths cover modern FHIR REST integration and legacy HL7 v2 interface processing.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Raw-to-curated design</h3>
+            <p>The pipeline keeps raw JSON files so the original FHIR payloads can be traced and replayed. It then extracts the fields needed for reporting into curated relational tables.</p>
+            <p>This follows a common integration pattern: land the source data, validate and normalize it, then serve analytics from curated tables instead of repeatedly parsing nested JSON in the dashboard.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Data model</h3>
+            <p>The main tables are patients, encounters, conditions, observations, hl7_messages, hl7_results, etl_audit, and compliance_events. Patients are the center. Encounters represent visits. Conditions represent diagnoses or active problems. Observations represent labs, vitals, and measurements.</p>
+            <p>The model intentionally keeps patient_id links across tables so the dashboard can support patient-level drill-down and operational worklists.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Validation and quality checks</h3>
+            <p>The project validates required identifiers and core fields before loading curated records. The dashboard then scores readiness with checks like patient reference present, clinical code present, observation value present, effective date present, and encounter link present.</p>
+            <p>These checks reduce downstream reporting risk when clinical records are present but incomplete.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Dashboard API</h3>
+            <p>The local web server exposes JSON endpoints for summary metrics, analytics, patients, encounters, conditions, observations, compliance posture, patient detail, and pipeline execution.</p>
+            <p>The UI does not query SQLite directly. It calls API endpoints, which keeps frontend responsibilities clear and supports future service-layer expansion.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Interactive UI logic</h3>
+            <p>The dashboard includes interactive workflows rather than static charts. KPI cards and chart rows filter the resource browser. Selecting a patient opens the Patient 360 view. The worklist highlights risk signals such as elevated A1c or blood pressure based on observation values.</p>
+            <p>The result is an operational view for care-readiness, data-quality review, and patient-level drill-down.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Compliance posture implementation</h3>
+            <p>The app defaults to DATA_CLASSIFICATION=synthetic and ALLOW_PHI=false. Patient detail views and dashboard events are written to compliance_events. ETL runs are written to etl_audit with source mode and load counts.</p>
+            <p>These controls do not replace enterprise compliance requirements. They establish application-level guardrails, auditability, minimum-necessary data exposure, and clear production-readiness boundaries.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Design decisions</h3>
+            <p>SQLite keeps the project portable. Python keeps the ETL layer explicit and inspectable. Static HTML/CSS/JavaScript avoids unnecessary frontend framework overhead. Synthetic FHIR data limits PHI risk. The dashboard is built around operational questions instead of vanity metrics.</p>
+            <p>The design prioritizes practical integration judgment: focused tools, clear data contracts, meaningful quality metrics, and a defined path from local validation to production hardening.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Production hardening roadmap</h3>
+            <p>Production hardening includes OAuth for Epic or another EHR sandbox, role-based access control, TLS, encrypted storage, secrets management, job scheduling, retry handling, structured logging, monitoring, and deployment behind an authenticated app gateway.</p>
+            <p>Additional scope would include FHIR resources such as MedicationRequest, AllergyIntolerance, Procedure, DiagnosticReport, and Immunization, plus terminology normalization and downstream data contracts.</p>
+          </article>
+
+          <article class="brief-card">
+            <h3>Capability coverage</h3>
+            <p>The project covers healthcare API ingestion, FHIR resource parsing, JSON normalization, HL7 v2 message parsing, SQL modeling, data quality scoring, audit logging, compliance-aware application design, interactive dashboard workflows, and patient-level operational analytics.</p>
+            <p>It uses public and synthetic data by default and separates local validation behavior from the additional controls required for real clinical data.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

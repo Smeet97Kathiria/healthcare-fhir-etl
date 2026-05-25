@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FHIROps Console</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="header-copy">
+        <p class="eyebrow">FHIR operations center</p>
+        <h1>FHIROps Console</h1>
+        <p class="subhead">Operational monitoring for FHIR APIs, HL7 v2 message feeds, clinical resource quality, and patient data readiness.</p>
+      </div>
+      <div class="header-panel">
+        <div class="system-health">
+          <span class="pulse-dot"></span>
+          <div>
+            <span class="label">System health</span>
+            <strong id="health-status">Checking</strong>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="refresh-button" class="secondary-button" type="button">Refresh</button>
+          <button id="run-button" type="button">Run Live FHIR</button>
+          <button id="synthetic-button" class="secondary-button" type="button">Load FHIR Sample</button>
+          <button id="hl7-button" class="secondary-button" type="button">Load HL7 Sample</button>
+          <a class="nav-link" href="/knowledge.html">Knowledge Brief</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="ops-strip" aria-live="polite">
+        <article>
+          <span class="label">FHIR endpoint</span>
+          <strong id="fhir-url">Loading...</strong>
+        </article>
+        <article>
+          <span class="label">Latest run</span>
+          <strong id="pipeline-status">Checking database</strong>
+        </article>
+        <article class="flow-card">
+          <span>FHIR / HL7</span>
+          <i></i>
+          <span>Raw payloads</span>
+          <i></i>
+          <span>Validation</span>
+          <i></i>
+          <span>Curated SQLite</span>
+        </article>
+      </section>
+
+      <section class="compliance-strip">
+        <article class="compliance-hero">
+          <span class="label">Compliance posture</span>
+          <strong id="compliance-status">Checking</strong>
+          <small id="data-classification">Data classification: loading</small>
+        </article>
+        <article class="compliance-controls" id="compliance-controls"></article>
+      </section>
+
+      <section class="metric-grid" aria-label="Pipeline metrics">
+        <article class="metric-card accent-blue" data-filter-table="patients" data-filter-value="">
+          <span>Patients</span>
+          <strong id="patients-count">0</strong>
+        </article>
+        <article class="metric-card accent-teal" data-filter-table="encounters" data-filter-value="">
+          <span>Encounters</span>
+          <strong id="encounters-count">0</strong>
+        </article>
+        <article class="metric-card accent-violet" data-filter-table="conditions" data-filter-value="">
+          <span>Conditions</span>
+          <strong id="conditions-count">0</strong>
+        </article>
+        <article class="metric-card accent-green" data-filter-table="observations" data-filter-value="">
+          <span>Observations</span>
+          <strong id="observations-count">0</strong>
+        </article>
+        <article class="metric-card accent-amber" data-filter-table="hl7-messages" data-filter-value="">
+          <span>HL7 Messages</span>
+          <strong id="hl7-messages-count">0</strong>
+        </article>
+        <article class="metric-card accent-violet" data-filter-table="hl7-results" data-filter-value="">
+          <span>HL7 Results</span>
+          <strong id="hl7-results-count">0</strong>
+        </article>
+        <article class="metric-card accent-blue" data-filter-table="observations" data-filter-value="">
+          <span>Observation Codes</span>
+          <strong id="codes-count">0</strong>
+        </article>
+        <article class="metric-card accent-rose" data-filter-table="observations" data-filter-value="missing">
+          <span>Missing Patient Refs</span>
+          <strong id="missing-refs-count">0</strong>
+        </article>
+        <article class="metric-card accent-amber" data-filter-table="observations" data-filter-value="">
+          <span>Coded Observations</span>
+          <strong id="coded-rate">0%</strong>
+        </article>
+        <article class="metric-card accent-green" data-filter-table="observations" data-filter-value="">
+          <span>Values Present</span>
+          <strong id="valued-rate">0%</strong>
+        </article>
+      </section>
+
+      <section class="insight-grid">
+        <article class="panel worklist-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Care operations</p>
+              <h2>Patient Risk Worklist</h2>
+            </div>
+          </div>
+          <div id="care-gap-list" class="care-gap-list"></div>
+        </article>
+
+        <article class="panel patient-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Patient 360</p>
+              <h2 id="patient-detail-title">Select a Patient</h2>
+            </div>
+          </div>
+          <div id="patient-detail" class="patient-detail empty-state">Choose a patient from the worklist or table to inspect conditions, encounters, observations, and risk signals.</div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid top-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Population</p>
+              <h2>Patient Count by Gender</h2>
+            </div>
+          </div>
+          <div id="gender-chart" class="bar-chart interactive-chart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Clinical coding</p>
+              <h2>Top Observation Codes</h2>
+            </div>
+          </div>
+          <div id="code-chart" class="ranked-list interactive-chart"></div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Legacy interface feed</p>
+              <h2>HL7 v2 Message Mix</h2>
+            </div>
+          </div>
+          <div id="hl7-message-chart" class="bar-chart interactive-chart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Lab result feed</p>
+              <h2>HL7 Abnormal Results</h2>
+            </div>
+          </div>
+          <div id="hl7-result-chart" class="ranked-list interactive-chart"></div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Population view</p>
+              <h2>Patient Age Bands</h2>
+            </div>
+          </div>
+          <div id="age-chart" class="bar-chart interactive-chart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Quality controls</p>
+              <h2>Observation Completeness</h2>
+            </div>
+          </div>
+          <div id="quality-chart" class="quality-list interactive-chart"></div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Privacy and security</p>
+              <h2>Control Readiness</h2>
+            </div>
+          </div>
+          <div id="control-readiness" class="control-list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Access trace</p>
+              <h2>Recent Compliance Events</h2>
+            </div>
+          </div>
+          <div id="compliance-events" class="event-list"></div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Diagnosis mix</p>
+              <h2>Top Conditions</h2>
+            </div>
+          </div>
+          <div id="condition-chart" class="ranked-list interactive-chart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Utilization</p>
+              <h2>Encounter Classes</h2>
+            </div>
+          </div>
+          <div id="encounter-chart" class="bar-chart interactive-chart"></div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Patient matching</p>
+              <h2>Observation Coverage by Patient</h2>
+            </div>
+          </div>
+          <div id="coverage-chart" class="bar-chart interactive-chart"></div>
+        </article>
+
+        <article class="panel run-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Run audit</p>
+              <h2>Latest ETL Load</h2>
+            </div>
+          </div>
+          <div class="run-matrix">
+            <div>
+              <span>Extracted</span>
+              <strong id="run-extracted">0</strong>
+            </div>
+            <div>
+              <span>Loaded</span>
+              <strong id="run-loaded">0</strong>
+            </div>
+            <div>
+              <span>Run Time</span>
+              <strong id="run-time">Not available</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading table-heading">
+          <div>
+            <p class="eyebrow">Resource browser</p>
+            <h2>Curated Healthcare Tables</h2>
+          </div>
+          <div class="toolbar">
+            <input id="search-input" type="search" placeholder="Search patients, codes, or observations">
+            <div class="tab-list" role="tablist" aria-label="Data table">
+              <button class="tab-button active" type="button" data-table="patients">Patients</button>
+              <button class="tab-button" type="button" data-table="encounters">Encounters</button>
+              <button class="tab-button" type="button" data-table="conditions">Conditions</button>
+              <button class="tab-button" type="button" data-table="observations">Observations</button>
+              <button class="tab-button" type="button" data-table="hl7-messages">HL7 Messages</button>
+              <button class="tab-button" type="button" data-table="hl7-results">HL7 Results</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
