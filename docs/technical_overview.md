@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-FHIROps Console is a compact healthcare interoperability platform for local validation of FHIR and HL7 data workflows. It extracts FHIR resources, parses HL7 v2 messages, validates core fields, normalizes source payloads into relational tables, and exposes dashboard-ready analytics through a local API.
+FHIROps Console is a compact healthcare interoperability platform for validating FHIR and HL7 data workflows. It extracts FHIR resources, parses HL7 v2 messages, validates core fields, normalizes source payloads into relational tables, and exposes dashboard-ready analytics through an application API.
 
 ## FHIR Context
 
@@ -28,7 +28,7 @@ HL7 v2 is commonly pipe-delimited and event-driven, while FHIR is resource-based
 
 ## HL7 Processing
 
-The project generates and parses synthetic ADT and ORU messages. Parsed data from MSH, PID, PV1, OBR, and OBX segments is loaded into curated `hl7_messages` and `hl7_results` tables for operational analytics.
+The project generates and parses non-PHI ADT and ORU messages. Parsed data from MSH, PID, PV1, OBR, and OBX segments is loaded into curated `hl7_messages` and `hl7_results` tables for operational analytics.
 
 ## Technologies
 
@@ -46,4 +46,4 @@ HL7 v2 is a messaging standard commonly used for real-time hospital interface me
 
 ## Compliance Posture
 
-The project defaults to synthetic data, keeps PHI ingestion disabled unless explicitly configured, records ETL audit metadata, logs dashboard access events, and exposes curated views instead of raw clinical payloads. Production use would require additional controls such as RBAC, TLS, encryption, secrets management, risk analysis, monitoring, and organizational compliance processes.
+The project defaults to generated non-PHI data, keeps PHI ingestion disabled unless explicitly configured, records ETL audit metadata, logs dashboard access events, and exposes curated views instead of raw clinical payloads. Production use would require additional controls such as RBAC, TLS, encryption, secrets management, risk analysis, monitoring, and organizational compliance processes.

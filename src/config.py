@@ -13,7 +13,7 @@ class Settings:
     sqlite_db_path: str = os.getenv("SQLITE_DB_PATH", "healthcare_fhir.db")
     data_classification: str = os.getenv("DATA_CLASSIFICATION", "synthetic")
     allow_phi: bool = os.getenv("ALLOW_PHI", "false").lower() == "true"
-    app_actor: str = os.getenv("APP_ACTOR", "local-operator")
+    app_actor: str = os.getenv("APP_ACTOR", "system-operator")
     fhir_auth_mode: str = os.getenv("FHIR_AUTH_MODE", "none")
     epic_fhir_base_url: str = os.getenv(
         "EPIC_FHIR_BASE_URL",

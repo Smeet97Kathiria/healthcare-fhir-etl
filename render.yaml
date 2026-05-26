@@ -23,7 +23,7 @@ services:
       - key: ALLOW_PHI
         value: false
       - key: APP_ACTOR
-        value: local-operator
+        value: system-operator
       - key: FHIR_AUTH_MODE
         value: none
       - key: EPIC_FHIR_BASE_URL

@@ -39,7 +39,7 @@
           <article class="brief-card">
             <h3>HL7 v2 Messaging</h3>
             <p>HL7 v2 is a widely deployed hospital messaging standard. It is event-driven and usually pipe-delimited. Patient registration, admission, discharge, lab result, order, and scheduling events are commonly exchanged as HL7 messages between clinical systems.</p>
-            <p>This project now generates and parses synthetic ADT^A01 and ORU^R01 messages. It reads MSH for routing metadata, PID for patient identity, PV1 for visit context, OBR for order context, and OBX for lab or vital result values.</p>
+            <p>This project generates and parses non-PHI ADT^A01 and ORU^R01 messages. It reads MSH for routing metadata, PID for patient identity, PV1 for visit context, OBR for order context, and OBX for lab or vital result values.</p>
           </article>
 
           <article class="brief-card">
@@ -69,19 +69,19 @@
           <article class="brief-card">
             <h3>SMART on FHIR and OAuth</h3>
             <p>Many EHR FHIR APIs use OAuth through SMART on FHIR. The core idea is that an app gets authorized with a client ID, scopes, redirect URI, and an access token. The token determines which patient, user, and resources the app can access.</p>
-            <p>The current implementation uses public and synthetic data sources. The extraction layer is structured so OAuth-backed FHIR access can be added without changing the curated data model.</p>
+            <p>The current implementation uses public FHIR data and generated non-PHI records. The extraction layer is structured so OAuth-backed FHIR access can be added without changing the curated data model.</p>
           </article>
 
           <article class="brief-card">
             <h3>Epic on FHIR sandbox path</h3>
-            <p>The project includes Epic on FHIR configuration placeholders for sandbox base URL, client ID, redirect URI, and SMART scopes. The active deployment keeps authentication disabled, but the code exposes the expected configuration contract through the local API.</p>
+            <p>The project includes Epic on FHIR configuration placeholders for sandbox base URL, client ID, redirect URI, and SMART scopes. The active deployment keeps authentication disabled, but the application API exposes the expected configuration contract.</p>
             <p>The documented next step is an OAuth authorization-code flow that obtains an access token, calls Epic FHIR resources such as Patient, Observation, Encounter, and Condition, and reuses the existing normalization and quality-checking logic.</p>
           </article>
 
           <article class="brief-card">
             <h3>Privacy, security, and compliance thinking</h3>
             <p>HIPAA compliance depends on organizational controls, policies, contracts, infrastructure, risk analysis, monitoring, and incident response. This project focuses on application-level safeguards that support a compliance-aware operating model.</p>
-            <p>The application defaults to synthetic data, blocks PHI mode unless explicitly enabled, logs patient detail access, keeps ETL audit records, and uses curated minimum-necessary views instead of exposing raw clinical bundles in the UI.</p>
+            <p>The application defaults to generated non-PHI data, blocks PHI mode unless explicitly enabled, logs patient detail access, keeps ETL audit records, and uses curated minimum-necessary views instead of exposing raw clinical bundles in the UI.</p>
           </article>
 
           <article class="brief-card">
@@ -117,7 +117,7 @@
           <article class="brief-card">
             <h3>Ingestion paths</h3>
             <p>The live path calls the public HAPI FHIR R4 endpoint and extracts Patient and Observation resources. This validates API-based FHIR ingestion against an external FHIR server while preserving a clear path to Epic on FHIR sandbox authentication.</p>
-            <p>The synthetic FHIR path generates Synthea-style bundles locally, then loads Patient, Encounter, Condition, and Observation resources. The HL7 path generates ADT and ORU messages, parses segments, and loads message/result tables. Together, the paths cover modern FHIR REST integration and legacy HL7 v2 interface processing.</p>
+            <p>The generated FHIR path creates Synthea-style bundles, then loads Patient, Encounter, Condition, and Observation resources. The HL7 path generates ADT and ORU messages, parses segments, and loads message/result tables. Together, the paths cover modern FHIR REST integration and legacy HL7 v2 interface processing.</p>
           </article>
 
           <article class="brief-card">
@@ -140,7 +140,7 @@
 
           <article class="brief-card">
             <h3>Dashboard API</h3>
-            <p>The local web server exposes JSON endpoints for summary metrics, analytics, patients, encounters, conditions, observations, compliance posture, patient detail, and pipeline execution.</p>
+            <p>The web server exposes JSON endpoints for summary metrics, analytics, patients, encounters, conditions, observations, compliance posture, patient detail, and pipeline execution.</p>
             <p>The UI does not query SQLite directly. It calls API endpoints, which keeps frontend responsibilities clear and supports future service-layer expansion.</p>
           </article>
 
@@ -158,8 +158,8 @@
 
           <article class="brief-card">
             <h3>Design decisions</h3>
-            <p>SQLite keeps the project portable. Python keeps the ETL layer explicit and inspectable. Static HTML/CSS/JavaScript avoids unnecessary frontend framework overhead. Synthetic FHIR data limits PHI risk. The dashboard is built around operational questions instead of vanity metrics.</p>
-            <p>The design prioritizes practical integration judgment: focused tools, clear data contracts, meaningful quality metrics, and a defined path from local validation to production hardening.</p>
+            <p>SQLite keeps the project portable. Python keeps the ETL layer explicit and inspectable. Static HTML/CSS/JavaScript avoids unnecessary frontend framework overhead. Generated non-PHI data limits PHI risk. The dashboard is built around operational questions instead of vanity metrics.</p>
+            <p>The design prioritizes practical integration judgment: focused tools, clear data contracts, meaningful quality metrics, and a defined path from controlled validation to production hardening.</p>
           </article>
 
           <article class="brief-card">
@@ -171,7 +171,7 @@
           <article class="brief-card">
             <h3>Capability coverage</h3>
             <p>The project covers healthcare API ingestion, FHIR resource parsing, JSON normalization, HL7 v2 message parsing, SQL modeling, data quality scoring, audit logging, compliance-aware application design, interactive dashboard workflows, and patient-level operational analytics.</p>
-            <p>It uses public and synthetic data by default and separates local validation behavior from the additional controls required for real clinical data.</p>
+            <p>It uses public FHIR data and generated non-PHI records by default and separates validation behavior from the additional controls required for live clinical data.</p>
           </article>
         </div>
       </section>

@@ -1,6 +1,6 @@
 # Epic on FHIR Readiness
 
-FHIROps Console currently runs against public and synthetic data sources. The FHIR ingestion layer is structured so it can be adapted to an Epic on FHIR sandbox or another SMART on FHIR-capable EHR endpoint.
+FHIROps Console currently runs against public FHIR data and generated non-PHI clinical records. The FHIR ingestion layer is structured so it can be adapted to an Epic on FHIR sandbox or another SMART on FHIR-capable EHR endpoint.
 
 This is not a production Epic integration. It documents the integration path and keeps the codebase ready for sandbox client registration.
 
@@ -9,7 +9,7 @@ This is not a production Epic integration. It documents the integration path and
 - Live FHIR extraction uses `FHIR_BASE_URL`, which defaults to the public HAPI FHIR R4 server.
 - Curated tables already support Patient, Encounter, Condition, and Observation data.
 - Dashboard APIs read from the curated SQLite model rather than directly from raw FHIR JSON.
-- Compliance posture defaults to synthetic data and `ALLOW_PHI=false`.
+- Compliance posture defaults to generated non-PHI data and `ALLOW_PHI=false`.
 
 ## Epic Sandbox Configuration
 
@@ -52,4 +52,4 @@ A production Epic/EHR integration would also require:
 - BAA and organizational compliance review
 - incident response and access review procedures
 
-The current implementation keeps those controls explicit instead of treating a local sandbox workflow as production-ready.
+The current implementation keeps those controls explicit and separates sandbox authentication readiness from the additional controls required for live clinical environments.

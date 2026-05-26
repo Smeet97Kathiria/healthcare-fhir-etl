@@ -25,7 +25,7 @@ class DashboardSettings:
     sqlite_db_path: str = os.getenv("SQLITE_DB_PATH", "healthcare_fhir.db")
     data_classification: str = os.getenv("DATA_CLASSIFICATION", "synthetic")
     allow_phi: bool = os.getenv("ALLOW_PHI", "false").lower() == "true"
-    app_actor: str = os.getenv("APP_ACTOR", "local-operator")
+    app_actor: str = os.getenv("APP_ACTOR", "system-operator")
     fhir_auth_mode: str = os.getenv("FHIR_AUTH_MODE", "none")
     epic_fhir_base_url: str = os.getenv(
         "EPIC_FHIR_BASE_URL",
@@ -132,7 +132,7 @@ def _compliance_posture() -> dict[str, Any]:
     )
     is_phi_mode = settings.data_classification.lower() in {"phi", "ephi", "production_phi"}
     phi_blocked = is_phi_mode and not settings.allow_phi
-    status = "Synthetic mode" if not is_phi_mode else ("PHI enabled" if settings.allow_phi else "PHI blocked")
+    status = "Non-PHI mode" if not is_phi_mode else ("PHI enabled" if settings.allow_phi else "PHI blocked")
 
     return {
         "status": status,
@@ -143,9 +143,9 @@ def _compliance_posture() -> dict[str, Any]:
         "recent_events": recent_events,
         "controls": [
             {
-                "name": "Synthetic data default",
+                "name": "Non-PHI data default",
                 "status": "pass" if settings.data_classification == "synthetic" else "review",
-                "detail": "Default mode uses synthetic records and avoids real PHI.",
+                "detail": "Default mode uses generated records and avoids real PHI.",
             },
             {
                 "name": "PHI ingestion guard",

@@ -135,7 +135,7 @@ function renderSummary(summary) {
   $("#health-status").textContent = summary.database_ready ? "Operational" : "No database";
 
   if (!summary.database_ready) {
-    $("#pipeline-status").textContent = "No local database yet. Run ETL to load data.";
+    $("#pipeline-status").textContent = "Database not initialized. Run ETL to load data.";
     $("#run-extracted").textContent = "0";
     $("#run-loaded").textContent = "0";
     $("#run-time").textContent = "Not available";
@@ -144,8 +144,8 @@ function renderSummary(summary) {
 
   const run = summary.last_run;
   const sourceLabels = {
-    synthetic_fhir: "Synthetic FHIR",
-    synthetic_hl7: "Synthetic HL7",
+    synthetic_fhir: "Generated FHIR",
+    synthetic_hl7: "Generated HL7",
     hapi_fhir: "FHIR API",
   };
   const sourceLabel = run ? (sourceLabels[run.source_mode] || "FHIR API") : "";
@@ -183,8 +183,13 @@ function controlPill(control) {
 }
 
 function renderCompliance(posture) {
+  const classificationLabels = {
+    synthetic: "generated non-PHI",
+    phi: "PHI",
+  };
+  const classification = classificationLabels[posture.data_classification] || posture.data_classification;
   $("#compliance-status").textContent = posture.status;
-  $("#data-classification").textContent = `Data classification: ${posture.data_classification} · Actor: ${posture.actor}`;
+  $("#data-classification").textContent = `Data classification: ${classification} · Actor: ${posture.actor}`;
   $("#compliance-controls").innerHTML = posture.controls.slice(0, 4).map((control) => `
     <div>
       ${controlPill(control)}
@@ -443,7 +448,7 @@ async function runPipeline() {
   const button = $("#run-button");
   button.disabled = true;
   button.textContent = "Running...";
-  showToast("Running extraction, transform, and load. Public FHIR test servers can take a moment.");
+  showToast("Running extraction, transform, and load. Public FHIR endpoints can take a moment.");
 
   try {
     await fetchJson("/api/run-pipeline", { method: "POST" });
@@ -461,17 +466,17 @@ async function loadSyntheticData() {
   const button = $("#synthetic-button");
   button.disabled = true;
   button.textContent = "Loading...";
-  showToast("Generating and loading local synthetic FHIR bundles.");
+  showToast("Generating and loading non-PHI FHIR bundles.");
 
   try {
     await fetchJson("/api/load-synthetic", { method: "POST" });
     await refreshDashboard();
-    showToast("Synthetic FHIR data loaded and dashboard refreshed.");
+    showToast("FHIR dataset loaded and dashboard refreshed.");
   } catch (error) {
-    showToast(`Synthetic load failed: ${error.message}`);
+    showToast(`FHIR dataset load failed: ${error.message}`);
   } finally {
     button.disabled = false;
-    button.textContent = "Load FHIR Sample";
+    button.textContent = "Load FHIR Dataset";
   }
 }
 
@@ -479,17 +484,17 @@ async function loadHl7Data() {
   const button = $("#hl7-button");
   button.disabled = true;
   button.textContent = "Loading...";
-  showToast("Generating and loading synthetic HL7 v2 ADT/ORU messages.");
+  showToast("Generating and loading non-PHI HL7 v2 ADT/ORU messages.");
 
   try {
     await fetchJson("/api/load-hl7", { method: "POST" });
     await refreshDashboard();
-    showToast("Synthetic HL7 v2 messages loaded and dashboard refreshed.");
+    showToast("HL7 feed loaded and dashboard refreshed.");
   } catch (error) {
     showToast(`HL7 load failed: ${error.message}`);
   } finally {
     button.disabled = false;
-    button.textContent = "Load HL7 Sample";
+    button.textContent = "Load HL7 Feed";
   }
 }
 
